@@ -1,0 +1,2 @@
+# Create a symbolic link with the Eigen main source folder here like this:
+mklink /D Eigen ..\..\..\..\..\..\Plugins\Libraries\Eigen
