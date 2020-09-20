@@ -125,14 +125,15 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 		return (*ptr).row(row).mean();
 	}
 
-	static float ColMean(MatrixXf* ptr, int col) {
+	static float ColMean(MatrixXf* ptr, int col)
+	{
 		return (*ptr).col(col).mean();
 	}
 
 	static float RowStd(MatrixXf* ptr, int row)
 	{
 		MatrixXf diff = (*ptr).row(row) -
-						(*ptr).row(row).mean() * MatrixXf::Ones(1, (*ptr).rows());
+				(*ptr).row(row).mean() * MatrixXf::Ones(1, (*ptr).rows());
 		diff = diff.cwiseProduct(diff);
 		return std::sqrt(diff.sum() / (*ptr).cols());
 	}
@@ -140,7 +141,7 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 	static float ColStd(MatrixXf* ptr, int col)
 	{
 		MatrixXf diff = (*ptr).col(col) -
-						(*ptr).col(col).mean() * MatrixXf::Ones((*ptr).rows(), 1);
+				(*ptr).col(col).mean() * MatrixXf::Ones((*ptr).rows(), 1);
 		diff = diff.cwiseProduct(diff);
 		return std::sqrt(diff.sum() / (*ptr).rows());
 	}
@@ -155,7 +156,7 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 		(*out).noalias() = (*ptr).cwiseProduct(*std) + *mean;
 	}
 
-	static void ILayer (MatrixXf* X, MatrixXf* W, MatrixXf* b)
+	static void ILayer(MatrixXf* X, MatrixXf* W, MatrixXf* b)
 	{
 		(*X).noalias() = *W * *X + *b;
 	}
@@ -180,48 +181,54 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 		{
 			switch(length)
 			{
-				case 1:
-				(*in).noalias() = w[0]**W[0];
+			case 1:
+				(*in).noalias() = w[0] * *W[0];
 				break;
-				case 2:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1];
+			case 2:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1];
 				break;
-				case 3:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2];
+			case 3:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2];
 				break;
-				case 4:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2] + w[3]**W[3];
+			case 4:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2] + w[3] * *W[3];
 				break;
-				case 5:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2] + w[3]**W[3] + w[4]**W[4];
+			case 5:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2] + w[3] * *W[3] + w[4] * *W[4];
 				break;
-				case 6:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2] + w[3]**W[3] + w[4]**W[4] + w[5]**W[5];
+			case 6:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2] + w[3] * *W[3] + w[4] * *W[4] + w[5] * *W[5];
 				break;
-				case 7:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2] + w[3]**W[3] + w[4]**W[4] + w[5]**W[5] + w[6]**W[6];
+			case 7:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2] + w[3] * *W[3] + w[4] * *W[4] + w[5] * *W[5] +
+						w[6] * *W[6];
 				break;
-				case 8:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2] + w[3]**W[3] + w[4]**W[4] + w[5]**W[5] + w[6]**W[6] + w[7]**W[7];
+			case 8:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2] + w[3] * *W[3] + w[4] * *W[4] + w[5] * *W[5] +
+						w[6] * *W[6] + w[7] * *W[7];
 				break;
-				case 9:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2] + w[3]**W[3] + w[4]**W[4] + w[5]**W[5] + w[6]**W[6] + w[7]**W[7] + w[8]**W[8];
+			case 9:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2] + w[3] * *W[3] + w[4] * *W[4] + w[5] * *W[5] +
+						w[6] * *W[6] + w[7] * *W[7] + w[8] * *W[8];
 				break;
-				case 10:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2] + w[3]**W[3] + w[4]**W[4] + w[5]**W[5] + w[6]**W[6] + w[7]**W[7] + w[8]**W[8] + w[9]**W[9];
+			case 10:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2] + w[3] * *W[3] + w[4] * *W[4] + w[5] * *W[5] +
+						w[6] * *W[6] + w[7] * *W[7] + w[8] * *W[8] + w[9] * *W[9];
 				break;
-				case 11:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2] + w[3]**W[3] + w[4]**W[4] + w[5]**W[5] + w[6]**W[6] + w[7]**W[7] + w[8]**W[8] + w[9]**W[9] + w[10]**W[10];
+			case 11:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2] + w[3] * *W[3] + w[4] * *W[4] + w[5] * *W[5] +
+						w[6] * *W[6] + w[7] * *W[7] + w[8] * *W[8] + w[9] * *W[9] + w[10] * *W[10];
 				break;
-				case 12:
-				(*in).noalias() = w[0]**W[0] + w[1]**W[1] + w[2]**W[2] + w[3]**W[3] + w[4]**W[4] + w[5]**W[5] + w[6]**W[6] + w[7]**W[7] + w[8]**W[8] + w[9]**W[9] + w[10]**W[10] + w[11]**W[11];
+			case 12:
+				(*in).noalias() = w[0] * *W[0] + w[1] * *W[1] + w[2] * *W[2] + w[3] * *W[3] + w[4] * *W[4] + w[5] * *W[5] +
+						w[6] * *W[6] + w[7] * *W[7] + w[8] * *W[8] + w[9] * *W[9] + w[10] * *W[10] + w[11] * *W[11];
 				break;
-				default:
+			default:
 				{
-					(*in).noalias() = w[0]**W[0];
-					for(int i=1; i<length; i++)
+					(*in).noalias() = w[0] * *W[0];
+					for(int i = 1; i < length; i++)
 					{
-						(*in).noalias() += w[i]**W[i];
+						(*in).noalias() += w[i] * *W[i];
 					}
 				}
 				break;
@@ -246,7 +253,8 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 	static void Sigmoid(MatrixXf* ptr)
 	{
 		int rows = (*ptr).rows();
-		for (int i = 0; i<rows; i++) {
+		for(int i = 0; i < rows; i++)
+		{
 			(*ptr)(i, 0) = 1.0f / (1.0f + std::exp(-(*ptr)(i, 0)));
 		}
 	}
@@ -254,7 +262,8 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 	static void TanH(MatrixXf* ptr)
 	{
 		int rows = (*ptr).rows();
-		for (int i = 0; i<rows; i++) {
+		for(int i = 0; i < rows; i++)
+		{
 			(*ptr)(i, 0) = std::tanh((*ptr)(i, 0));
 		}
 	}
@@ -263,11 +272,13 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 	{
 		float frac = 0.0f;
 		int rows = (*ptr).rows();
-		for (int i = 0; i<rows; i++) {
+		for(int i = 0; i < rows; i++)
+		{
 			(*ptr)(i, 0) = std::exp((*ptr)(i, 0));
 			frac += (*ptr)(i, 0);
 		}
-		for (int i = 0; i<rows; i++) {
+		for(int i = 0; i < rows; i++)
+		{
 			(*ptr)(i, 0) /= frac;
 		}
 	}
@@ -276,11 +287,13 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 	{
 		float frac = 0.0f;
 		int rows = (*ptr).rows();
-		for (int i = 0; i<rows; i++) {
+		for(int i = 0; i < rows; i++)
+		{
 			(*ptr)(i, 0) = std::exp((*ptr)(i, 0));
 			frac += (*ptr)(i, 0);
 		}
-		for (int i = 0; i<rows; i++) {
+		for(int i = 0; i < rows; i++)
+		{
 			(*ptr)(i, 0) = std::log((*ptr)(i, 0) / frac);
 		}
 	}
@@ -288,10 +301,18 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 	static void SoftSign(MatrixXf* ptr)
 	{
 		int rows = (*ptr).rows();
-		for (int i = 0; i<rows; i++) {
+		for(int i = 0; i < rows; i++)
+		{
 			(*ptr)(i, 0) /= 1 + std::abs((*ptr)(i, 0));
 		}
 	}
 
-	static void Exp(MatrixXf* ptr);
+	static void Exp(MatrixXf* ptr)
+	{
+		int rows = (*ptr).rows();
+		for(int i = 0; i < rows; i++)
+		{
+			(*ptr)(i, 0) = std::exp((*ptr)(i, 0));
+		}
+	}
 };
