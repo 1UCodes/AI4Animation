@@ -4,7 +4,7 @@
 	"VersionName": "1.0",
 	"FriendlyName": "DeepLearningHelpers",
 	"Description": "Plugin to hold deep learning helper functions",
-	"Category": "Other",
+	"Category": "AI",
 	"CreatedBy": "Juan Belon",
 	"CreatedByURL": "https://github.com/juaxix",
 	"DocsURL": "",
@@ -14,16 +14,17 @@
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
 	"Installed": false,
-	"Plugins": [
-	{
-		"Name": "Eigen",
-		"Enabled": true
-	}],
 	"Modules": [
 		{
 			"Name": "DeepLearningHelpers",
 			"Type": "Runtime",
 			"LoadingPhase": "PreLoadingScreen"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "Eigen",
+			"Enabled": true
 		}
 	]
 }
