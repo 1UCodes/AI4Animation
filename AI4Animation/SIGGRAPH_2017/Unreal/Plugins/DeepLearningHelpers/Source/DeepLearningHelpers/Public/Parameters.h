@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/Public/Misc/CoreMisc.h"
 #include "EigenLibrary.h"
 #include "Engine/DataAsset.h"
 #include "ArrayExtensions.h"
@@ -12,6 +13,7 @@ struct FPVector
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
 	TArray<float> Values;
 
 	FPVector() = default;
@@ -32,20 +34,20 @@ struct FPMatrix
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
 	TArray<FPVector> Values;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
 	int Rows;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
 	int Cols;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
 	FString ID;
 
 	FPMatrix(): Values(), Rows(0), Cols(0), ID("")
 	{
 	}
 
-	FPMatrix(int rows, int cols, FString id)
+	FPMatrix(int rows, int cols, const FString& id)
 	{
 		Rows = rows;
 		Cols = cols;
@@ -64,10 +66,10 @@ class UParameters : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
 	TArray<FPMatrix> Matrices;
 
-	UFUNCTION(BlueprintCallable, Category = "Parameters")
+	UFUNCTION(BlueprintCallable, Category = "Deep Learning|Parameters")
 	void Store(const FString& fn, int rows, int cols, const FString& id)
 	{
 		for(int i = 0; i < Matrices.Num(); i++)
@@ -82,7 +84,7 @@ public:
 		Matrices.Add(ReadBinary(fn, rows, cols, id));
 	}
 
-	UFUNCTION(BlueprintCallable, Category = "Parameters")
+	UFUNCTION(BlueprintCallable, Category = "Deep Learning|Parameters")
 	FPMatrix Load(const FString& id)
 	{
 		FPMatrix* matrix = Matrices.FindByPredicate([id](auto& x) { return x.ID == id; });
@@ -94,47 +96,51 @@ public:
 		return *matrix;
 	}
 
-	UFUNCTION(BlueprintCallable, Category = "Parameters")
+	UFUNCTION(BlueprintCallable, Category = "Deep Learning|Parameters")
 	void Clear()
 	{
 		Matrices.Empty();
 	}
 
-	UFUNCTION(BlueprintCallable, Category = "Parameters")
+	UFUNCTION(BlueprintCallable, Category = "Deep Learning|Parameters")
 	FPMatrix ReadBinary(const FString& fn, int rows, int cols, const FString& id)
 	{
-		UE_LOG(LogProcess, Warning, TEXT("Not implemented yet"));
-		/** @TODO */
-		/*if(File.Exists(fn))
+		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+		if(PlatformFile.FileExists(*fn))
 		{
-			 FPMatrix matrix = new FPMatrix(rows, cols, id);
-			 BinaryReader reader = new BinaryReader(File.Open(fn, FileMode.Open));
-			 int errors = 0;
-			 for(int x=0; x<rows; x++) {
-				  for(int y=0; y<cols; y++) {
-				 try {
-					  matrix.Values[x].Values[y] = reader.ReadSingle();
-				 } catch {
-					  errors += 1;
-				 }
-				  }
-			 }
-			 reader.Close();
-			if(errors > 0) {
-			 Debug.Log("There were " + errors + " errors reading file at path " + fn + ".");
-			 return null;
+			FPMatrix matrix(rows, cols, id);
+			IFileHandle* reader = PlatformFile.OpenRead(*fn, false);
+			int errors = 0;
+			constexpr int64 bytesToRead = sizeof(float);
+			uint8* bytes = new uint8[bytesToRead];
+			for(int x = 0; x < rows; x++)
+			{
+				for(int y = 0; y < cols; y++)
+				{
+					if (reader->Read(bytes, bytesToRead))
+					{
+						matrix.Values[x].Values[y] = *reinterpret_cast<float*>(bytes);
+					}
+					else
+					{
+						errors++;
+					}
+				}
+			}
+			delete[] bytes;
+
+			if(errors > 0)
+			{
+				UE_LOG(LogProcess, Error, TEXT("There were %d errors reading file at path '%s'."), errors, *fn);
+				return FPMatrix();
 			}
 			else
 			{
 				return matrix;
 			}
 		}
-		else
-		{
-				Debug.Log("File at path " + fn + " does not exist.");
-				return null;
-		}*/
-		return FPMatrix(0, 0, TEXT(""));
-	}
 
+		UE_LOG(LogProcess, Error, TEXT("File at path '%s' does not exist."), *fn);
+		return FPMatrix();
+	}
 };
