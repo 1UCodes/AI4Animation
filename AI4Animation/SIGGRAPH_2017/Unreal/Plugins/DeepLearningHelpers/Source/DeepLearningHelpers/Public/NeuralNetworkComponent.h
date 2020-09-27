@@ -12,7 +12,7 @@
 #include "NeuralNetworkComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(AI), meta=(BlueprintSpawnableComponent) )
 class DEEPLEARNINGHELPERS_API UNeuralNetworkComponent : public USceneComponent
 {
 	GENERATED_BODY()
@@ -27,7 +27,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Neural Network")
 	UParameters* Parameters;
 
-	Tensor X, Y;
+	Tensor *X, *Y;
 
 	int Pivot = -1;
 
@@ -38,11 +38,13 @@ protected:
 	virtual void LoadParametersDerived(){};
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "AI|Deep Learning|Neural Network")
 	virtual void Predict(){};
 
+	UFUNCTION(BlueprintCallable, Category = "AI|Deep Learning|Neural Network")
 	void StoreParameters()
 	{
-		//Parameters = ScriptableObject.CreateInstance<Parameters>();
+		Parameters->Clear();
 		StoreParametersDerived();
 
 
@@ -55,6 +57,7 @@ public:
 		#endif*/
 	}
 
+	UFUNCTION(BlueprintCallable, Category = "AI|Deep Learning|Neural Network")
 	void LoadParameters()
 	{
 		if(Parameters == nullptr)
@@ -78,7 +81,6 @@ public:
 		const int32 i = Tensors.Add(T);
 		return &Tensors[i];
 	}
-
 
 	Tensor* CreateTensor(const FPMatrix& matrix)
 	{
@@ -138,25 +140,25 @@ public:
 	void SetInput(int index, float value)
 	{
 		Pivot = index;
-		X.SetValue(index, 0, value);
+		X->SetValue(index, 0, value);
 	}
 
 	float GetInput(int index)
 	{
 		Pivot = index;
-		return X.GetValue(index, 0);
+		return X->GetValue(index, 0);
 	}
 
 	void SetOutput(int index, float value)
 	{
 		Pivot = index;
-		Y.SetValue(index, 0, value);
+		Y->SetValue(index, 0, value);
 	}
 
 	float GetOutput(int index)
 	{
 		Pivot = index;
-		return Y.GetValue(index, 0);
+		return Y->GetValue(index, 0);
 	}
 
 	void Feed(float value)
@@ -164,7 +166,7 @@ public:
 		SetInput(Pivot + 1, value);
 	}
 
-	void Feed(float values[], int size)
+	void Feed(const TArray<float> &values, int size)
 	{
 		for(int i = 0; i < size; i++)
 		{
@@ -172,13 +174,13 @@ public:
 		}
 	}
 
-	void Feed(FVector2D& vector)
+	void Feed(const FVector2D& vector)
 	{
 		Feed(vector.X);
 		Feed(vector.Y);
 	}
 
-	void Feed(FVector& vector)
+	void Feed(const FVector& vector)
 	{
 		Feed(vector.X);
 		Feed(vector.Y);
@@ -214,7 +216,7 @@ public:
 		}
 		else
 		{
-			UEigenLibrary::Normalise(tIN->Ptr, mean->Ptr, std->Ptr, tOUT->Ptr);
+			UEigenLibrary::Normalise(tIN->Ptr.Get(), mean->Ptr.Get(), std->Ptr.Get(), tOUT->Ptr.Get());
 			return tOUT;
 		}
 	}
@@ -232,7 +234,7 @@ public:
 		}
 		else
 		{
-			UEigenLibrary::Renormalise(tIN->Ptr, mean->Ptr, std->Ptr, tOUT->Ptr);
+			UEigenLibrary::Renormalise(tIN->Ptr.Get(), mean->Ptr.Get(), std->Ptr.Get(), tOUT->Ptr.Get());
 			return tOUT;
 		}
 	}
@@ -247,7 +249,7 @@ public:
 		}
 		else
 		{
-			UEigenLibrary::Layer(tIN->Ptr, W->Ptr, b->Ptr, tOUT->Ptr);
+			UEigenLibrary::Layer(tIN->Ptr.Get(), W->Ptr.Get(), b->Ptr.Get(), tOUT->Ptr.Get());
 			return tOUT;
 		}
 	}
@@ -260,50 +262,50 @@ public:
 			return T;
 		}
 
-		UEigenLibrary::Blend(T->Ptr, W->Ptr, w);
+		UEigenLibrary::Blend(T->Ptr.Get(), W->Ptr.Get(), w);
 		return T;
 	}
 
 	Tensor* ELU(Tensor* T)
 	{
-		UEigenLibrary::ELU(T->Ptr);
+		UEigenLibrary::ELU(T->Ptr.Get());
 		return T;
 	}
 
 	Tensor* Sigmoid(Tensor* T)
 	{
-		UEigenLibrary::Sigmoid(T->Ptr);
+		UEigenLibrary::Sigmoid(T->Ptr.Get());
 		return T;
 	}
 
 	Tensor* TanH(Tensor* T)
 	{
-		UEigenLibrary::TanH(T->Ptr);
+		UEigenLibrary::TanH(T->Ptr.Get());
 		return T;
 	}
 
 	Tensor* SoftMax(Tensor* T)
 	{
-		UEigenLibrary::SoftMax(T->Ptr);
+		UEigenLibrary::SoftMax(T->Ptr.Get());
 		return T;
 	}
 
 	Tensor* LogSoftMax(Tensor* T)
 	{
-		UEigenLibrary::LogSoftMax(T->Ptr);
+		UEigenLibrary::LogSoftMax(T->Ptr.Get());
 		return T;
 	}
 
 	Tensor* SoftSign(Tensor* T)
 	{
-		UEigenLibrary::SoftSign(T->Ptr);
+		UEigenLibrary::SoftSign(T->Ptr.Get());
 		return T;
 	}
 
 
 	Tensor* Exp(Tensor* T)
 	{
-		UEigenLibrary::Exp(T->Ptr);
+		UEigenLibrary::Exp(T->Ptr.Get());
 		return T;
 	}
 

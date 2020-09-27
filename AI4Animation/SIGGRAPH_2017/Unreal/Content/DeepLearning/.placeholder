@@ -1,0 +1,1 @@
+mklink /D trained ..\..\..\..\SIGGRAPH_2018\TensorFlow\trained

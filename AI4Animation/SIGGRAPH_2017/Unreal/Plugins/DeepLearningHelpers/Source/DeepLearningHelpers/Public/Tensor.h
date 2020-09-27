@@ -8,14 +8,14 @@
 class Tensor
 {
 public:
-	MatrixXf* Ptr;
+	TSharedPtr<MatrixXf> Ptr;
 	FString ID;
 
 	Tensor() = default;
 
 	Tensor(int rows, int cols, const FString& id)
 	{
-		Ptr = UEigenLibrary::Create(rows, cols);
+		Ptr = UEigenLibrary::CreateShared(rows, cols);
 		ID = id;
 		m_Deleted = false;
 	}
@@ -27,31 +27,32 @@ public:
 
 	void Delete()
 	{
-		if(!m_Deleted)
+		if ( !m_Deleted && Ptr)
 		{
-			UEigenLibrary::Delete(Ptr);
+			//UEigenLibrary::Delete(Ptr);
+			Ptr.Reset();
 			m_Deleted = true;
 		}
 	}
 
 	int GetRows()
 	{
-		return UEigenLibrary::GetRows(Ptr);
+		return UEigenLibrary::GetRows(Ptr.Get());
 	}
 
 	int GetCols()
 	{
-		return UEigenLibrary::GetCols(Ptr);
+		return UEigenLibrary::GetCols(Ptr.Get());
 	}
 
 	void SetZero()
 	{
-		UEigenLibrary::SetZero(Ptr);
+		UEigenLibrary::SetZero(Ptr.Get());
 	}
 
 	void SetSize(int rows, int cols)
 	{
-		UEigenLibrary::SetSize(Ptr, rows, cols);
+		UEigenLibrary::SetSize(Ptr.Get(), rows, cols);
 	}
 
 	void SetValue(int row, int col, float value)
@@ -62,7 +63,7 @@ public:
 			return;
 		}
 
-		UEigenLibrary::SetValue(Ptr, row, col, value);
+		UEigenLibrary::SetValue(Ptr.Get(), row, col, value);
 	}
 
 	float GetValue(int row, int col)
@@ -73,7 +74,7 @@ public:
 			return 0.0f;
 		}
 
-		return UEigenLibrary::GetValue(Ptr, row, col);
+		return UEigenLibrary::GetValue(Ptr.Get(), row, col);
 	}
 
 	static Tensor* Add(Tensor* lhs, Tensor* rhs, Tensor* pOUT)
@@ -84,7 +85,7 @@ public:
 		}
 		else
 		{
-			UEigenLibrary::Add(lhs->Ptr, rhs->Ptr, pOUT->Ptr);
+			UEigenLibrary::Add(lhs->Ptr.Get(), rhs->Ptr.Get(), pOUT->Ptr.Get());
 		}
 
 		return pOUT;
@@ -98,7 +99,7 @@ public:
 		}
 		else
 		{
-			UEigenLibrary::Subtract(lhs->Ptr, rhs->Ptr, pOUT->Ptr);
+			UEigenLibrary::Subtract(lhs->Ptr.Get(), rhs->Ptr.Get(), pOUT->Ptr.Get());
 		}
 
 		return pOUT;
@@ -112,14 +113,14 @@ public:
 		}
 		else
 		{
-			UEigenLibrary::Product(lhs->Ptr, rhs->Ptr, pOUT->Ptr);
+			UEigenLibrary::Product(lhs->Ptr.Get(), rhs->Ptr.Get(), pOUT->Ptr.Get());
 		}
 		return pOUT;
 	}
 
 	static Tensor* Scale(Tensor* lhs, float value, Tensor* pOUT)
 	{
-		UEigenLibrary::Scale(lhs->Ptr, value, pOUT->Ptr);
+		UEigenLibrary::Scale(lhs->Ptr.Get(), value, pOUT->Ptr.Get());
 		return pOUT;
 	}
 
@@ -131,7 +132,7 @@ public:
 		}
 		else
 		{
-			UEigenLibrary::PointwiseProduct(lhs->Ptr, rhs->Ptr, pOUT->Ptr);
+			UEigenLibrary::PointwiseProduct(lhs->Ptr.Get(), rhs->Ptr.Get(), pOUT->Ptr.Get());
 		}
 		return pOUT;
 	}
@@ -144,14 +145,14 @@ public:
 		}
 		else
 		{
-			UEigenLibrary::PointwiseQuotient(lhs->Ptr, rhs->Ptr, pOUT->Ptr);
+			UEigenLibrary::PointwiseQuotient(lhs->Ptr.Get(), rhs->Ptr.Get(), pOUT->Ptr.Get());
 		}
 		return pOUT;
 	}
 
 	static Tensor* PointwiseAbsolute(Tensor* tensor_in, Tensor* tensor_out)
 	{
-		UEigenLibrary::PointwiseAbsolute(tensor_in->Ptr, tensor_out->Ptr);
+		UEigenLibrary::PointwiseAbsolute(tensor_in->Ptr.Get(), tensor_out->Ptr.Get());
 		return tensor_out;
 	}
 
@@ -162,7 +163,7 @@ public:
 			UE_LOG(LogProcess, Display, TEXT("Accessing out of bounds."));
 			return 0.0f;
 		}
-		return UEigenLibrary::RowMean(Ptr, row);
+		return UEigenLibrary::RowMean(Ptr.Get(), row);
 	}
 
 	float ColMean(int col)
@@ -172,7 +173,7 @@ public:
 			UE_LOG(LogProcess, Display, TEXT("Accessing out of bounds."));
 			return 0.0f;
 		}
-		return UEigenLibrary::ColMean(Ptr, col);
+		return UEigenLibrary::ColMean(Ptr.Get(), col);
 	}
 
 	float RowStd(int row)
@@ -182,7 +183,7 @@ public:
 			UE_LOG(LogProcess, Display, TEXT("Accessing out of bounds."));
 			return 0.0f;
 		}
-		return UEigenLibrary::RowStd(Ptr, row);
+		return UEigenLibrary::RowStd(Ptr.Get(), row);
 	}
 
 	float ColStd(int col)
@@ -192,7 +193,7 @@ public:
 			UE_LOG(LogProcess, Display, TEXT("Accessing out of bounds."));
 			return 0.0f;
 		}
-		return UEigenLibrary::ColStd(Ptr, col);
+		return UEigenLibrary::ColStd(Ptr.Get(), col);
 	}
 
 	float RowSum(int row)
@@ -202,7 +203,7 @@ public:
 			UE_LOG(LogProcess, Display, TEXT("Accessing out of bounds."));
 			return 0.0f;
 		}
-		return UEigenLibrary::RowSum(Ptr, row);
+		return UEigenLibrary::RowSum(Ptr.Get(), row);
 	}
 
 	float ColSum(int col)
@@ -212,7 +213,7 @@ public:
 			UE_LOG(LogProcess, Display, TEXT("Accessing out of bounds."));
 			return 0.0f;
 		}
-		return UEigenLibrary::ColSum(Ptr, col);
+		return UEigenLibrary::ColSum(Ptr.Get(), col);
 	}
 
 	void Print()

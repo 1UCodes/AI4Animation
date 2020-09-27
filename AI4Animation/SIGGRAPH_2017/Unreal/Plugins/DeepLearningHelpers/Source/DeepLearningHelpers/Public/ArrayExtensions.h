@@ -5,92 +5,100 @@
 class ArrayExtensions
 {
 public:
-	template<typename T>
-	static void Add(TArray<T> &Array, T Element)
+	template <typename T>
+	static void Add(TArray<T>& Array, T Element)
 	{
 		Expand(Array);
 		Array[Array.Num() - 1] = Element;
 	}
 
-	template<typename T>
-	static void Insert(TArray<T> &Array, T Element, int Index)
+	template <typename T>
+	static void Insert(TArray<T>& Array, T Element, int Index)
 	{
 		if(Index >= 0 && Index < Array.Num())
 		{
 			Expand(Array);
-			for(int i=Array.Num()-1; i>Index; --i)
+			for(int i = Array.Num() - 1; i > Index; --i)
 			{
-				Array[i] = Array[i-1];
+				Array[i] = Array[i - 1];
 			}
 			Array[Index] = Element;
 		}
 	}
 
-	template<typename T>
-	static void RemoveAt(TArray<T> &Array, int Index)
+	template <typename T>
+	static void RemoveAt(TArray<T>& Array, int Index)
 	{
 		if(Index >= 0 && Index < Array.Num())
 		{
-			for(int i=Index; i<Array.Num()-1; i++)
+			for(int i = Index; i < Array.Num() - 1; i++)
 			{
-				Array[i] = Array[i+1];
+				Array[i] = Array[i + 1];
 			}
 			Shrink(Array);
 		}
 	}
 
-	template<typename T>
-	static void Remove(TArray<T> &Array, T Element)
+	template <typename T>
+	static void Remove(TArray<T>& Array, T Element)
 	{
 		RemoveAt(Array, FindIndex(Array, Element));
 	}
 
-	template<typename T>
+	template <typename T>
 	static void Expand(TArray<T>& Array)
 	{
-		Array.ResizeTo(Array.Num()+1);
+		Array.Reserve(Array.Num() + 1);
 	}
 
-	template<typename T>
-	static void Shrink(TArray<T> &Array)
+	template <typename T>
+	static void Shrink(TArray<T>& Array)
 	{
 		if(Array.Num() > 0)
 		{
-			Array.ResizeTo(Array.Num - 1);
+			Resize(Array.Num - 1);
 		}
 	}
 
-	template<typename T>
-	static void Resize(TArray<T> &Array, int Size)
+	template <typename T>
+	static void Resize(TArray<T>& Array, int Size)
 	{
-		Array.ResizeTo(Size);
+		const int32 Num = Array.Num();
+		if ( Num > Size )
+		{
+			Array.RemoveAt(FMath::Abs(Size - 1), Num - Size, true);
+		}
+		else if( Num < Size )
+		{
+			 Array.Reserve(Size);
+		}
 	}
 
-	template<typename T>
+	template <typename T>
 	static void Clear(TArray<T>& Array)
 	{
 		Array.Empty(0);
 	}
 
-	template<typename T>
+	template <typename T>
 	static int FindIndex(const TArray<T>& Array, T Element)
 	{
-		return Array.IndexOfByPredicate([Element](const T& x){return x.Equals(Element);});
+		return Array.IndexOfByPredicate([Element](const T& x) { return x.Equals(Element); });
 	}
 
-	template<typename T>
-	static T Find(TArray<T> &Array, T Element)
+	template <typename T>
+	static T Find(TArray<T>& Array, T Element)
 	{
 		return Array.Find(Element);
 	}
 
-	template<typename T>
-	static bool Contains(TArray<T> &Array, T &Element)
+	template <typename T>
+	static bool Contains(TArray<T>& Array, T& Element)
 	{
 		return Array.Contains(Element);
 	}
 
-	template<typename T>
+	template <typename T>
 	static TArray<T> Concat(const TArray<T>& lhs, const TArray<T>& rhs)
 	{
 		TArray<T> result;
@@ -100,7 +108,7 @@ public:
 		return result;
 	}
 
-	template<typename T>
+	template <typename T>
 	static TArray<T> Concat(T& lhs, const TArray<T>& rhs)
 	{
 		TArray<T> clone = rhs;
@@ -108,7 +116,7 @@ public:
 		return clone;
 	}
 
-	template<typename T>
+	template <typename T>
 	static TArray<T> Concat(const TArray<T>& lhs, T& rhs)
 	{
 		TArray<T> clone = lhs;
@@ -125,7 +133,7 @@ public:
 		}
 		TArray<float> result;
 		result.Reserve(lhs.Num());
-		for(int i=0; i<result.Num(); i++)
+		for(int i = 0; i < result.Num(); i++)
 		{
 			result[i] = lhs[i] + rhs[i];
 		}
@@ -136,7 +144,7 @@ public:
 	{
 		TArray<float> result;
 		result.Reserve(lhs.Num());
-		for(int i=0; i<result.Num(); i++)
+		for(int i = 0; i < result.Num(); i++)
 		{
 			result[i] = lhs[i] + value;
 		}
@@ -152,7 +160,7 @@ public:
 		}
 		TArray<float> result;
 		result.Reserve(lhs.Num());
-		for(int i=0; i<result.Num(); i++)
+		for(int i = 0; i < result.Num(); i++)
 		{
 			result[i] = lhs[i] - rhs[i];
 		}
@@ -163,7 +171,7 @@ public:
 	{
 		TArray<float> result;
 		result.Reserve(lhs.Num());
-		for(int i=0; i<result.Num(); i++)
+		for(int i = 0; i < result.Num(); i++)
 		{
 			result[i] = lhs[i] - value;
 		}
@@ -173,7 +181,7 @@ public:
 	static int Sum(const TArray<int>& values)
 	{
 		int sum = 0;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			sum += values[i];
 		}
@@ -184,7 +192,7 @@ public:
 	static float Sum(const TArray<float>& values)
 	{
 		float sum = 0.0f;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			sum += values[i];
 		}
@@ -194,7 +202,7 @@ public:
 	static double Sum(const TArray<double>& values)
 	{
 		double sum = 0.0;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			sum += values[i];
 		}
@@ -204,7 +212,7 @@ public:
 	static int AbsSum(const TArray<int>& values)
 	{
 		int sum = 0;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			sum += FMath::Abs(values[i]);
 		}
@@ -214,7 +222,7 @@ public:
 	static float AbsSum(const TArray<float>& values)
 	{
 		float sum = 0.0f;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			sum += FMath::Abs(values[i]);
 		}
@@ -224,7 +232,7 @@ public:
 	static double AbsSum(const TArray<double>& values)
 	{
 		double sum = 0.0;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			sum += FMath::Abs(values[i]);
 		}
@@ -233,12 +241,12 @@ public:
 
 	static int Min(const TArray<int>& values)
 	{
-		if(values.Num()== 0)
+		if(values.Num() == 0)
 		{
 			return 0;
 		}
 		int min = INT_MAX;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			min = FMath::Min(min, values[i]);
 		}
@@ -252,7 +260,7 @@ public:
 			return 0.0f;
 		}
 		float min = TNumericLimits<float>::Max();
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			min = FMath::Min(min, values[i]);
 		}
@@ -266,7 +274,7 @@ public:
 			return 0.0;
 		}
 		double min = TNumericLimits<double>::Max();
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			min = FMath::Min(min, values[i]);
 		}
@@ -280,7 +288,7 @@ public:
 			return 0;
 		}
 		int max = INT_MAX;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			max = FMath::Max(max, values[i]);
 		}
@@ -294,7 +302,7 @@ public:
 			return 0.0f;
 		}
 		float max = TNumericLimits<float>::Max();
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			max = FMath::Max(max, values[i]);
 		}
@@ -308,7 +316,7 @@ public:
 			return 0.0;
 		}
 		double max = TNumericLimits<double>::Max();
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			max = FMath::Max(max, values[i]);
 		}
@@ -323,7 +331,7 @@ public:
 		}
 		float mean = 0.f;
 		float args = 0.f;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			mean += values[i];
 			args += 1.f;
@@ -334,12 +342,13 @@ public:
 
 	static float Mean(const TArray<float>& values)
 	{
-		if(values.Num() == 0) {
+		if(values.Num() == 0)
+		{
 			return 0.f;
 		}
 		float mean = 0.f;
 		float args = 0.f;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			mean += values[i];
 			args += 1.f;
@@ -356,7 +365,7 @@ public:
 		}
 		double mean = 0.0;
 		double args = 0.0;
-		for(int i=0; i < values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			mean += values[i];
 			args += 1.0;
@@ -374,7 +383,7 @@ public:
 		float variance = 0.f;
 		float mean = Mean(values);
 		float args = 0.f;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			variance += FMath::Pow(values[i] - mean, 2.f);
 			args += 1.f;
@@ -392,7 +401,7 @@ public:
 		float variance = 0.f;
 		float mean = Mean(values);
 		float args = 0.0f;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			variance += FMath::Pow(values[i] - mean, 2.0f);
 			args += 1.f;
@@ -410,7 +419,7 @@ public:
 		double variance = 0.0;
 		double mean = Mean(values);
 		double args = 1.0;
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
 			variance += FMath::Pow(values[i] - mean, 2.0);
 			args += 1.0;
@@ -427,9 +436,9 @@ public:
 	static void Print(const TArray<double>& values)
 	{
 		FString Output = TEXT("[");
-		for(int i=0; i<values.Num(); i++)
+		for(int i = 0; i < values.Num(); i++)
 		{
-			Output += FString::SanitizeFloat(values[i]) + (i==values.Num()-1 ? "]" : ", ");
+			Output += FString::SanitizeFloat(values[i]) + (i == values.Num() - 1 ? "]" : ", ");
 		}
 
 		UE_LOG(LogProcess, Display, TEXT("%s"), *Output);
@@ -438,18 +447,20 @@ public:
 	static void Print(const TArray<float>& values)
 	{
 		FString output = TEXT("[");
-		for(int i=0; i<values.Num(); i++) {
-			output += FString::SanitizeFloat(values[i]) + (i==values.Num()-1 ? "]" : ", ");
+		for(int i = 0; i < values.Num(); i++)
+		{
+			output += FString::SanitizeFloat(values[i]) + (i == values.Num() - 1 ? "]" : ", ");
 		}
 		UE_LOG(LogProcess, Display, TEXT("%s"), *output);
 	}
 
-	static void Print(const TArray<int>& values) {
+	static void Print(const TArray<int>& values)
+	{
 		FString output = TEXT("[");
-		for(int i=0; i<values.Num(); i++) {
-			output += FString::FromInt(values[i]) + (i==values.Num()-1 ? "]" : ", ");
+		for(int i = 0; i < values.Num(); i++)
+		{
+			output += FString::FromInt(values[i]) + (i == values.Num() - 1 ? "]" : ", ");
 		}
 		UE_LOG(LogProcess, Display, TEXT("%s"), *output);
 	}
-
 };

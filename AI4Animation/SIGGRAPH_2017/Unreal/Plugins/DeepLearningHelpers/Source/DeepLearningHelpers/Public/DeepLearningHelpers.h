@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// juaxix - 2020 - xixgames
 
 #pragma once
 

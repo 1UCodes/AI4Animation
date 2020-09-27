@@ -8,24 +8,21 @@
 
 #include "Parameters.generated.h"
 
+#pragma optimize("", off)
+
 USTRUCT(BlueprintType)
 struct FPVector
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Parameters")
 	TArray<float> Values;
 
 	FPVector() = default;
 
 	FPVector(int size)
 	{
-		Values.Reserve(size);
-	}
-
-	FPVector(FPVector* other)
-	{
-		Values = other->Values;
+		Values.SetNumZeroed(size, true);
 	}
 };
 
@@ -34,13 +31,13 @@ struct FPMatrix
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Parameters")
 	TArray<FPVector> Values;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Parameters")
 	int Rows;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Parameters")
 	int Cols;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Parameters")
 	FString ID;
 
 	FPMatrix(): Values(), Rows(0), Cols(0), ID("")
@@ -60,31 +57,30 @@ public:
 	}
 };
 
-
 UCLASS(BlueprintType, Blueprintable)
 class UParameters : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Deep Learning|Parameters")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Parameters")
 	TArray<FPMatrix> Matrices;
 
-	UFUNCTION(BlueprintCallable, Category = "Deep Learning|Parameters")
+	UFUNCTION(BlueprintCallable, Category = "AI|Deep Learning|Parameters")
 	void Store(const FString& fn, int rows, int cols, const FString& id)
 	{
-		for(int i = 0; i < Matrices.Num(); i++)
+		if (Matrices.FindByPredicate([&id](FPMatrix& m){return id == m.ID;}))
 		{
-			if(Matrices[i].ID == id)
-			{
-				UE_LOG(LogProcess, Error, TEXT("FPMatrix with ID %s already contained."), *id);
-				return;
-			}
+			UE_LOG(LogProcess, Error, TEXT("FPMatrix with ID %s already contained."), *id);
+			return;
 		}
 
 		Matrices.Add(ReadBinary(fn, rows, cols, id));
 	}
 
-	UFUNCTION(BlueprintCallable, Category = "Deep Learning|Parameters")
+	UFUNCTION(BlueprintCallable, Category = "AI|Deep Learning|Parameters")
+	void Save(){ SaveConfig(); }
+
+	UFUNCTION(BlueprintCallable, Category = "AI|Deep Learning|Parameters")
 	FPMatrix Load(const FString& id)
 	{
 		FPMatrix* matrix = Matrices.FindByPredicate([id](auto& x) { return x.ID == id; });
@@ -96,13 +92,13 @@ public:
 		return *matrix;
 	}
 
-	UFUNCTION(BlueprintCallable, Category = "Deep Learning|Parameters")
+	UFUNCTION(BlueprintCallable, Category = "AI|Deep Learning|Parameters")
 	void Clear()
 	{
 		Matrices.Empty();
 	}
 
-	UFUNCTION(BlueprintCallable, Category = "Deep Learning|Parameters")
+	UFUNCTION(BlueprintCallable, Category = "AI|Deep Learning|Parameters")
 	FPMatrix ReadBinary(const FString& fn, int rows, int cols, const FString& id)
 	{
 		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
@@ -143,4 +139,6 @@ public:
 		UE_LOG(LogProcess, Error, TEXT("File at path '%s' does not exist."), *fn);
 		return FPMatrix();
 	}
+
 };
+#pragma optimize("", on)

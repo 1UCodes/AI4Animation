@@ -40,9 +40,17 @@ class EIGEN_API UEigenLibrary : public UBlueprintFunctionLibrary
 		return new MatrixXf(Eigen::MatrixXf::Zero(rows, cols));
 	}
 
+	static TSharedPtr<MatrixXf> CreateShared(int rows, int cols)
+	{
+		return MakeShared<MatrixXf>(MatrixXf::Zero(rows, cols));
+	}
+
 	static void Delete(MatrixXf* ptr)
 	{
+	  if(ptr)
+	  {
 		delete(ptr);
+	  }
 	}
 
 	static int GetRows(MatrixXf* ptr)
