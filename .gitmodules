@@ -1,6 +1,6 @@
 [submodule "AI4Animation/SIGGRAPH_2017/Unreal/Plugins/tensorflow-ue4"]
 	path = AI4Animation/SIGGRAPH_2017/Unreal/Plugins/tensorflow-ue4
-	url = https://github.com/getnamo/tensorflow-ue4.git
+	url = https://github.com/getnamo/tensorflow-ue4
 [submodule "AI4Animation/SIGGRAPH_2017/Unreal/Plugins/socketio-client-ue4"]
 	path = AI4Animation/SIGGRAPH_2017/Unreal/Plugins/socketio-client-ue4
 	url = https://github.com/getnamo/socketio-client-ue4

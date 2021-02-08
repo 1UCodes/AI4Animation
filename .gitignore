@@ -44,7 +44,6 @@ AI4Animation/SIGGRAPH_Asia_2019/Unity/Packages
 *.pidb
 *.booproj
 *.svd
-*.pdb
 *.vscode
 *.vs
 *__pychache__
@@ -65,3 +64,4 @@ AI4Animation/SIGGRAPH_2017/Unreal/Binaries/
 AI4Animation/SIGGRAPH_2017/Unreal/Saved/
 AI4Animation/SIGGRAPH_2017/Unreal/Plugins/DeepLearningHelpers/Intermediate/
 AI4Animation/SIGGRAPH_2017/Unreal/Plugins/DeepLearningHelpers/Binaries/
+AI4Animation/SIGGRAPH_2017/Unreal/_ReSharper.Caches/
