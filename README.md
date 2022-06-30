@@ -1,11 +1,82 @@
-AI4Animation: Deep Learning, Character Animation, Control
+AI4Animation: Deep Learning for Character Control
 ============
 
-This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a modular and stable framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository enables using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment, plus sports games. Further advances on this research will continue being added to this project.
+This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a comprehensive framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository demonstrates using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment, plus sports and fighting games. Further advances on this research will continue being added to this project.
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=wNqpSk4FhSw">
-<img width="60%" src="https://img.youtube.com/vi/wNqpSk4FhSw/0.jpg">
+<img width="60%" src="Media/Other/ThesisFastForward.jpg">
+</a>
+</p>
+
+------------
+**SIGGRAPH 2022**<br />
+**DeepPhase: Periodic Autoencoders for Learning Motion Phase Manifolds**<br >
+<sub>
+<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a>, 
+<a href="https://www.linkedin.com/in/ian-mason-134197105/">Ian Mason</a>, 
+<a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>, 
+ACM Trans. Graph. 41, 4.
+<sub>
+------------
+<img src ="Media/SIGGRAPH_2022/Teaser.png" width="100%">
+
+<p align="center">
+Learning the spatial-temporal structure of body movements is a fundamental problem for character motion synthesis. In this work, we propose a novel neural network architecture called the Periodic Autoencoder that can learn periodic features from large unstructured motion datasets in an unsupervised manner. The character movements are decomposed into multiple latent channels that capture the non-linear periodicity of different body segments while progressing forward in time. Our method extracts a multi-dimensional phase space from full-body motion data, which effectively clusters animations and produces a manifold in which computed feature distances provide a better similarity measure than in the original motion space to achieve better temporal and spatial alignment. We demonstrate that the learned periodic embedding can significantly help to improve neural motion synthesis in a number of tasks, including diverse locomotion skills, style-based movements, dance motion synthesis from music, synthesis of dribbling motions in football, and motion query for matching poses within large animation databases.
+</p>
+
+<p align="center">
+<img src ="Media/SIGGRAPH_2022/Manifolds.png" width="100%">
+</p>
+
+<p align="center">
+-
+<a href="https://www.youtube.com/watch?v=YhH4PYEkVnY">Video</a>
+-
+<a href="Media/SIGGRAPH_2022/Paper.pdf">Paper</a>
+-
+Code (coming soon)
+-
+</p>
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=YhH4PYEkVnY">
+<img width="60%" src="Media/SIGGRAPH_2022/Thumbnail.png">
+</a>
+</p>
+
+------------
+**SIGGRAPH 2021**<br />
+**Neural Animation Layering for Synthesizing Martial Arts Movements**<br >
+<sub>
+<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a>, 
+<a href="https://www.linkedin.com/in/evan-yiwei-zhao-18584a105/">Yiwei Zhao</a>, 
+<a href="https://www.linkedin.com/in/fabio-zinno-1a77331/">Fabio Zinno</a>, 
+<a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>, 
+ACM Trans. Graph. 40, 4, Article 92.
+<sub>
+------------
+<img src ="Media/SIGGRAPH_2021/Teaser.jpg" width="100%">
+
+<p align="center">
+<img src ="Media/SIGGRAPH_2021/Layering.png" width="80%">
+</p>
+
+<p align="center">
+Interactively synthesizing novel combinations and variations of character movements from different motion skills is a key problem in computer animation. In this research, we propose a deep learning framework to produce a large variety of martial arts movements in a controllable manner from raw motion capture data. Our method imitates animation layering using neural networks with the aim to overcome typical challenges when mixing, blending and editing movements from unaligned motion sources. The system can be used for offline and online motion generation alike, provides an intuitive interface to integrate with animator workflows, and is relevant for real-time applications such as computer games.
+</p>
+
+<p align="center">
+-
+<a href="https://www.youtube.com/watch?v=SkJNxLYNwN0">Video</a>
+-
+<a href="Media/SIGGRAPH_2021/Paper.pdf">Paper</a>
+-
+</p>
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=SkJNxLYNwN0">
+<img width="60%" src="Media/SIGGRAPH_2021/Thumbnail.jpg">
 </a>
 </p>
 
@@ -42,13 +113,17 @@ multiple locomotion modes as well as different character and object interactions
 -
 <a href="Media/SIGGRAPH_2020/Paper.pdf">Paper</a>
 -
-Code (coming soon)
+<a href="AI4Animation/SIGGRAPH_2020">Code</a>
+-
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2020/Demo_Windows.zip">Windows Demo</a>
+-
+<a href="AI4Animation/SIGGRAPH_2020/ReadMe.md">ReadMe</a>
 -
 </p>
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=Rzj3k3yerDk">
-<img width="60%" src="https://img.youtube.com/vi/Rzj3k3yerDk/0.jpg">
+<img width="60%" src="Media/SIGGRAPH_2020/Thumbnail.jpg">
 </a>
 </p>
 
@@ -77,13 +152,17 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 -
 <a href="Media/SIGGRAPH_Asia_2019/Paper.pdf">Paper</a>
 -
-<a href="AI4Animation/SIGGRAPH_Asia_2019">Code & Data</a>
+<a href="AI4Animation/SIGGRAPH_Asia_2019">Code & Demo</a>
+-
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_Asia_2019/MotionCapture.zip">Mocap Data</a>
+-
+<a href="AI4Animation/SIGGRAPH_Asia_2019/ReadMe.md">ReadMe</a>
 -
 </p>
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=7c6oQP1u2eQ">
-<img width="60%" src="https://img.youtube.com/vi/7c6oQP1u2eQ/0.jpg">
+<img width="60%" src="Media/SIGGRAPH_Asia_2019/Thumbnail.jpg">
 </a>
 </p>
 
@@ -114,23 +193,31 @@ This year, we will be presenting our recent research on quadruped animation and 
 -
 <a href="AI4Animation/SIGGRAPH_2018">Code</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/MotionCapture.zip">Mocap Data</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/MotionCapture.zip">Mocap Data</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Linux.zip">Linux Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Linux.zip">Linux Demo</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
 -
-<a href="AI4Animation/SIGGRAPH_2018/ReadMe.txt">ReadMe</a>
+<a href="AI4Animation/SIGGRAPH_2018/ReadMe.md">ReadMe</a>
 -
 </p>
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
-<img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+<img width="60%" src="Media/SIGGRAPH_2018/Thumbnail.png">
 </a>
 </p>
+
+
+<p align="center">
+-
+<a href="https://github.com/pauzii/AnimationAuthoring">Animation Authoring Tool</a>
+-
+</p>
+<img src ="https://github.com/pauzii/AnimationAuthoring/raw/main/Media/Teaser.png" width="100%">
 
 ------------
 **SIGGRAPH 2017**<br />
@@ -160,11 +247,11 @@ and store the parameters via the custom inspector button.
 -
 <a href="AI4Animation/SIGGRAPH_2017">Code (Unity)</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Windows.zip">Windows Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Windows.zip">Windows Demo</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Linux.zip">Linux Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Linux.zip">Linux Demo</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Mac.zip">Mac Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Mac.zip">Mac Demo</a>
 -
 </p>
 
@@ -184,6 +271,4 @@ In progress. More information will be added soon.
 
 Copyright Information
 ============
-This project is only for research or education purposes, and not freely available for commercial use or redistribution. The intellectual property for different scientific contributions belongs to the University of Edinburgh, Adobe Systems and Electronic Arts. Licensing is possible if you want to use the code for commercial use. For scientific use, please reference this repository together with the relevant publications below.
-
-The motion capture data is available only under the terms of the [Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/legalcode) (CC BY-NC 4.0) license.
+This project is only for research or education purposes, and not freely available for commercial use or redistribution. The motion capture data is available only under the terms of the [Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/legalcode) (CC BY-NC 4.0) license.
