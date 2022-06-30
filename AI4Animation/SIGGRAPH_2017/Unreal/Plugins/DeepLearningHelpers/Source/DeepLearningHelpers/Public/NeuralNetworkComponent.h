@@ -72,7 +72,7 @@ public:
 
 	Tensor* CreateTensor(int rows, int cols, const FString& id)
 	{
-		if(Tensors.ContainsByPredicate([id](Tensor& t) { return t.ID.Equals(id); }))
+		if(Tensors.ContainsByPredicate([id](Tensor& t) -> bool { return t.ID.Equals(id); }))
 		{
 			UE_LOG(LogProcess, Warning, TEXT("Tensor with ID '%s' already contained."), *id);
 			return nullptr;
