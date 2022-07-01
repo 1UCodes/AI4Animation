@@ -11,7 +11,8 @@ public class DeepLearningHelpers : ModuleRules
 			new string[]
 			{
 				"Core",
-				"Eigen"
+				"Eigen", 
+                "Engine"
 			}
 			);
 

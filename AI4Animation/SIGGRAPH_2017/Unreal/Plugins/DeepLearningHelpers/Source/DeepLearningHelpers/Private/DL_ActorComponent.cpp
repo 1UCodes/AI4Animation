@@ -1,36 +1,31 @@
-// juaxix - 2020 - xixgames
+// juaxix - 2020-2022 - xixgames
 
 #include "DL_ActorComponent.h"
 
+#include "DrawDebugHelpers.h"
 #include "MeshUtilities.h"
 #include "SkeletalRenderPublic.h"
 
-UDL_Bone* UDL_Bone::GetParent()
+FDL_Bone* FDL_Bone::GetParent() const
 {
-	return ParentIndex == -1 ? nullptr : Actor->Bones[ParentIndex];
+	return ParentIndex == -1 ? nullptr : &ActorComponent->Bones[ParentIndex];
 }
 
-UDL_Bone* UDL_Bone::GetChild(int32 InIndex)
+FDL_Bone* FDL_Bone::GetChild(int32 InIndex) const
 {
-	return InIndex >= Childs.Num() ? nullptr : Actor->Bones[Childs[InIndex]];
+	return !Childs.IsValidIndex(InIndex) ? nullptr : &ActorComponent->Bones[Childs[InIndex]];
 }
 
-FVector UDL_Bone::GetBoneLocationByIndex(int32 InIndex) const
+FVector FDL_Bone::GetBoneLocationByIndex(int32 InIndex) const
 {
-	if ( InIndex == -1 )
-	{
-		return FVector::ZeroVector;
-	}
-
-	return Actor->SkeletalMeshComponent->GetBoneTransform(
-		InIndex,
-		Actor->GetOwner()->GetActorTransform()
-	).GetLocation();
+	return	InIndex > -1 
+			? ActorComponent->SkeletalMeshComponent->GetBoneTransform(InIndex).GetLocation()
+			: FVector::ZeroVector;
 }
 
-float UDL_Bone::GetLength()
+float FDL_Bone::GetLength() const
 {
-	if(GetParent() == nullptr)
+	if (GetParent() == nullptr)
 	{
 		return 0.0f;
 	}
@@ -39,6 +34,11 @@ float UDL_Bone::GetLength()
 }
 
 UDL_ActorComponent::UDL_ActorComponent()
+	: bInspectSkeleton(false)
+	, bDrawRoot(false)
+	, bDrawSkeleton(false)
+	, bDrawVelocities(false)
+	, bDrawTransforms(false)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
@@ -49,46 +49,65 @@ void UDL_ActorComponent::BeginPlay()
 	ExtractSkeleton();
 }
 
-
-void UDL_ActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-													FActorComponentTickFunction* ThisTickFunction)
+void UDL_ActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	DebugDraw();
 }
 
-void UDL_ActorComponent::AddSkeletonNodeRecursive(int32 InBoneIndex, int32 InParentBoneIndex)
+void UDL_ActorComponent::AddSkeletonNodes()
 {
-	if (InBoneIndex==-1)
+	const int32 NumBones = SkeletalMeshComponent->GetNumBones();
+	const USkeleton* Skeleton = SkeletalMeshComponent->SkeletalMesh->GetSkeleton();
+	const FReferenceSkeleton& RefSkeleton = SkeletalMeshComponent->SkeletalMesh->GetRefSkeleton();
+	for (int32 BoneIndex = 0; BoneIndex < NumBones; ++BoneIndex)
 	{
-		return;
+		TArray<int32> BoneChilds;
+		Skeleton->GetChildBones(BoneIndex, BoneChilds);
+		Bones.Emplace(FVector::ZeroVector, BoneIndex, RefSkeleton.GetParentIndex(BoneIndex), BoneChilds, RefSkeleton.GetBoneName(BoneIndex), this);
+	}
+}
+
+void UDL_ActorComponent::DebugDrawBoneRecursive(const FDL_Bone& Bone) const
+{
+	const UWorld* const World = GetWorld();
+	const FVector ParentBoneLocation = Bone.ParentBoneLocation();
+	if (Bone.Index > -1 && Bone.ParentIndex != Bone.Index && ParentBoneLocation != FVector::ZeroVector)
+	{
+		const FVector BoneLocation = Bone.BoneLocation();
+		DrawDebugDirectionalArrow(World, BoneLocation, ParentBoneLocation, BoneSize, BoneColor, false, 0.0f, SDPG_Foreground, 2.1f);
 	}
 
-	// Create the Deep Learning bone
-	FName BoneName = SkeletalMeshComponent->GetBoneName(InBoneIndex);
-	UDL_Bone* bone = NewObject<UDL_Bone>(
-	  this,
-	  UDL_Bone::StaticClass(),
-	  FName("Bone_" + BoneName.ToString() + "_" + FString::FromInt(InBoneIndex))
-	  );
-	bone->Init(this, BoneName, InBoneIndex);
-	bone->ParentIndex = InParentBoneIndex;
-	SkeletalMeshComponent->SkeletalMesh->Skeleton->GetChildBones(InBoneIndex, bone->Childs);
-	Bones.Add(bone);
-
-	// Scan the skeleton in a recursive way
-	const int32 ChildrenNum = bone->Childs.Num();
-	for (int32 i = 0; i < ChildrenNum; i++)
+	for (const int32 BoneIndex : Bone.Childs)
 	{
-		AddSkeletonNodeRecursive(bone->Childs[i], InBoneIndex);
+		if (const FDL_Bone* BoneChild = Bone.GetChild(BoneIndex))
+		{
+			DebugDrawBoneRecursive(*BoneChild);
+		}
+	}
+}
+
+void UDL_ActorComponent::DebugDraw() const
+{
+	if (bDrawSkeleton && Bones.Num() > 0)
+	{
+		for (const auto& Bone : Bones)
+		{
+			DebugDrawBoneRecursive(Bone);
+		}
 	}
 }
 
 void UDL_ActorComponent::ExtractSkeleton()
 {
-	if (!SkeletalMeshComponent)
+	if (!IsValid(SkeletalMeshComponent))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Skeletal Mesh Component is null"));
-		return;
+		SkeletalMeshComponent = Cast<USkeletalMeshComponent>(GetOwner()->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
+		if (!SkeletalMeshComponent)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Skeletal Mesh Component is null"));
+			return;
+		}
 	}
 
 	if (SkeletalMeshComponent->GetNumBones() == 0)
@@ -98,6 +117,5 @@ void UDL_ActorComponent::ExtractSkeleton()
 	}
 
 	Bones.Empty();
-
-	AddSkeletonNodeRecursive(0);
+	AddSkeletonNodes();
 }

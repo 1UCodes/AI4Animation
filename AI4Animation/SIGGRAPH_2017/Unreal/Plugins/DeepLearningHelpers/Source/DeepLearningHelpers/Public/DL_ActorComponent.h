@@ -1,63 +1,55 @@
-// juaxix - 2020 - xixgames
+// juaxix - 2020-2022 - xixgames
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "DL_ActorComponent.generated.h"
 
 
 class UDL_ActorComponent;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) , Category = "AI|Deep Learning|Bones")
-class DEEPLEARNINGHELPERS_API UDL_Bone: public UObject
+USTRUCT( Blueprintable, Category = "AI|Deep Learning|Bones")
+struct DEEPLEARNINGHELPERS_API FDL_Bone
 {
 	GENERATED_BODY()
-
 public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Bones")
+	FVector Velocity = FVector::ZeroVector;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Bones")
-	FVector Velocity;
+	int32 Index = -1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Bones")
-	int32 Index;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Bones")
-	int32 ParentIndex;
+	int32 ParentIndex = -1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Bones")
 	TArray<int32> Childs;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Bones")
-	FName BoneName;
+	FName BoneName = TEXT("");
 
-	UDL_ActorComponent* Actor;
+	UPROPERTY(Transient)
+	UDL_ActorComponent* ActorComponent = nullptr;
 
-	UDL_Bone()
-	{}
+	FDL_Bone() = default;
 
-	UFUNCTION(BlueprintCallable, Category = "AI|Deep Learning|Bones")
-	void Init(UDL_ActorComponent* InActor, const FName& InBoneName, int32 InBoneIndex)
+	explicit FDL_Bone(const FVector& InVelocity, const int32 InIndex, const int32 InParentIndex, TArray<int32>& InChilds, const FName& InBoneName, UDL_ActorComponent* InActorComponent)
 	{
-		Actor = InActor;
+		Velocity = InVelocity;
+		Index = InIndex;
+		ParentIndex = InParentIndex;
+		Childs = MoveTemp(InChilds);
 		BoneName = InBoneName;
-		Velocity = FVector::ZeroVector;
-		Index = InBoneIndex;
-		ParentIndex = -1;
+		ActorComponent = InActorComponent;
 	}
 
-	/*FString GetName()
-	{
-		return UGameplayStatics::  Transform;
-	}*/
-
-	UDL_Bone* GetParent();
-	UDL_Bone* GetChild(int32 InIndex);
+	FDL_Bone* GetParent() const;
+	FDL_Bone* GetChild(int32 InIndex) const;
 	FVector GetBoneLocationByIndex(int32 InIndex) const;
-	FVector BoneLocation() const{return GetBoneLocationByIndex( Index );}
-	FVector ParentBoneLocation() const{return GetBoneLocationByIndex( ParentIndex );}
-	float GetLength();
+	FVector BoneLocation() const {return GetBoneLocationByIndex(Index);}
+	FVector ParentBoneLocation() const {return GetBoneLocationByIndex(ParentIndex);}
+	float GetLength() const;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) , Category = "AI|Deep Learning|Actor")
@@ -67,22 +59,25 @@ class DEEPLEARNINGHELPERS_API UDL_ActorComponent : public UActorComponent
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
-	bool InspectSkeleton = false;
+	uint8 bInspectSkeleton:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
-	bool DrawRoot = false;
+	uint8 bDrawRoot:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
-	bool DrawSkeleton = true;
+	uint8 bDrawSkeleton:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
-	bool DrawVelocities = false;
+	uint8 bDrawVelocities:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
-	bool DrawTransforms = false;
+	uint8 bDrawTransforms:1;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
 	float BoneSize = 0.025f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
+	float BoneWidth = 12.5f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
 	FColor BoneColor = FColor::Black;
@@ -91,22 +86,21 @@ public:
 	FColor JointColor = FColor::Yellow;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
-	TArray<UDL_Bone*> Bones;
+	TArray<FDL_Bone> Bones;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Deep Learning|Actor")
-	USkeletalMeshComponent* SkeletalMeshComponent;
+	UPROPERTY(Transient)
+	USkeletalMeshComponent* SkeletalMeshComponent = nullptr;
 
 	UDL_ActorComponent();
 
 protected:
 	virtual void BeginPlay() override;
 
-	/// <summary>
-	/// Recursive method to extract bones into the bones array
-	/// </summary>
-	/// <param name="InBoneIndex"></param>
-	/// <param name="InParentBoneIndex"></param>
-	virtual void AddSkeletonNodeRecursive(int32 InBoneIndex, int32 InParentBoneIndex = -1);
+	virtual void AddSkeletonNodes();
+
+	void DebugDrawBoneRecursive(const FDL_Bone& Bone) const;
+
+	virtual void DebugDraw() const;
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

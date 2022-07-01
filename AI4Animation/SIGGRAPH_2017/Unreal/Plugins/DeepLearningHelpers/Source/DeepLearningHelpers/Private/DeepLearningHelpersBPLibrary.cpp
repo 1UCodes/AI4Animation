@@ -1,11 +1,5 @@
-// juaxix - 2020 - xixgames
+// juaxix - 2020-2022 - xixgames
 
 #include "DeepLearningHelpersBPLibrary.h"
 #include "DeepLearningHelpers.h"
-
-UDeepLearningHelpersBPLibrary::UDeepLearningHelpersBPLibrary(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
-{
-
-}
 
