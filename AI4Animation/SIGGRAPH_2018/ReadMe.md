@@ -35,3 +35,9 @@ You will then need to use the developed motion capture editor tools inside Unity
 
 ------------
 Any questions, feel free to ask. For any issues you might find, please let me know and send me a message to Sebastian.Starke@ed.ac.uk.
+
+2022 - By Juan Belón
+--- HOWTO Unreal Version :
+- Install 4.27
+- Search for all the .placeholder files and do the mklinks with a windows console as admin 
+- Generate project files and compile project - load the .uproject and play
