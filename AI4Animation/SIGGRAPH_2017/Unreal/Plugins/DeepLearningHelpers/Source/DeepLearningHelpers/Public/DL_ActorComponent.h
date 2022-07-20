@@ -46,8 +46,12 @@ public:
 
 	FDL_Bone* GetParent() const;
 	FDL_Bone* GetChild(int32 InIndex) const;
+
+	
 	FVector GetBoneLocationByIndex(int32 InIndex) const;
 	FVector BoneLocation() const {return GetBoneLocationByIndex(Index);}
+	FTransform GetBoneTransformByIndex(int32 InIndex) const;
+	FTransform BoneTransform() const {return GetBoneTransformByIndex(Index);}
 	FVector ParentBoneLocation() const {return GetBoneLocationByIndex(ParentIndex);}
 	float GetLength() const;
 };

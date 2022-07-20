@@ -105,6 +105,10 @@
 		{
 			"Name": "PlatformCrypto",
 			"Enabled": false
+		},
+		{
+			"Name": "ControlRig",
+			"Enabled": true
 		}
 	]
 }

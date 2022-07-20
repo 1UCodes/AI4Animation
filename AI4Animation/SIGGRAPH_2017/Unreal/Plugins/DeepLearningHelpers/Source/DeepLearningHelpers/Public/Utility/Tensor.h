@@ -61,7 +61,7 @@ namespace DeepLearningHelpers
 		{
 			if (row >= GetRows() || col >= GetCols())
 			{
-				UE_LOG(LogProcess, Display, TEXT("Setting out of bounds at [%d,%d]"), row, col);
+				UE_LOG(LogProcess, Display, TEXT("Tensor :: SetValue : Setting out of bounds at [%d,%d]"), row, col);
 				return;
 			}
 
@@ -72,7 +72,7 @@ namespace DeepLearningHelpers
 		{
 			if (row >= GetRows() || col >= GetCols())
 			{
-				UE_LOG(LogProcess, Display, TEXT("Getting out of bounds at [%d,%d]"), row, col);
+				UE_LOG(LogProcess, Display, TEXT("Tensor :: GetValue : Getting out of bounds at [%d,%d]"), row, col);
 				return 0.0f;
 			}
 

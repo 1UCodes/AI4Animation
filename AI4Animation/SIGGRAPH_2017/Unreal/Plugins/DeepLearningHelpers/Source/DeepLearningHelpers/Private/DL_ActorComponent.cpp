@@ -16,6 +16,13 @@ FDL_Bone* FDL_Bone::GetChild(int32 InIndex) const
 	return !Childs.IsValidIndex(InIndex) ? nullptr : &ActorComponent->Bones[Childs[InIndex]];
 }
 
+FTransform FDL_Bone::GetBoneTransformByIndex(int32 InIndex) const
+{
+	return	InIndex > -1 
+			? ActorComponent->SkeletalMeshComponent->GetBoneTransform(InIndex)
+			: FTransform();
+}
+
 FVector FDL_Bone::GetBoneLocationByIndex(int32 InIndex) const
 {
 	return	InIndex > -1 

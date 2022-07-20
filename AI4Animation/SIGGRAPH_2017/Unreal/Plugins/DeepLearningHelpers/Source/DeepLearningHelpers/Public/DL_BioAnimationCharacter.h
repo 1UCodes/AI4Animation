@@ -3,13 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Animation/Trajectory.h"
 #include "GameFramework/Character.h"
 #include "Tools/PIDController.h"
 #include "DL_BioAnimationCharacter.generated.h"
 
 class UDL_MANN;
-class ADL_Controller;
 class UDL_ActorComponent;
+class ADL_PlayerController;
+class UControlRigComponent;
 
 UCLASS()
 class DEEPLEARNINGHELPERS_API ADL_BioAnimationCharacter : public ACharacter
@@ -17,30 +19,47 @@ class DEEPLEARNINGHELPERS_API ADL_BioAnimationCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
 	bool bInspect = false;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
 	bool bShowTrajectory = true;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
 	bool bShowVelocities = true;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
 	float TargetGain = 0.25f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
 	float TargetDecay = 0.05f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
 	bool bTrajectoryControl = true;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
 	float TrajectoryCorrection = 1.0f;
 
-	//UPROPERTY(Transient)
-	//ADL_Controller* Controller = nullptr;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
+	UControlRigComponent* ControlRig = nullptr;
 
-	UPROPERTY(Transient)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Setup")
+	ADL_PlayerController* CachedPlayerController = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
 	UDL_ActorComponent* Actor = nullptr;
 
-	UPROPERTY(Transient)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
 	UDL_MANN* NN = nullptr;
+	
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Trajectory")
+	FVector TargetDirection = FVector::ZeroVector;
 
-	// TODO Trajectory Trajectory;
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Trajectory")
+	FVector TargetVelocity = FVector::ZeroVector;
 
-	FVector TargetDirection;
-	FVector TargetVelocity;
-	DeepLearningHelpers::PIDController PID;
+	DeepLearningHelpers::FDL_Trajectory Trajectory;
+	DeepLearningHelpers::PIDController PID{0.2f, 0.8f, 0.0f};
 
 	//State
 	TArray<FVector> Positions;
@@ -73,10 +92,44 @@ public:
 	// UFontStyle FontStyle;
 	
 	//Performance
-	float NetworkPredictionTime;
+	double NetworkPredictionTime;
 
 	ADL_BioAnimationCharacter();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void Reinitialise();
+
+private:
+	virtual float PoolBias();
+
+	virtual void PredictTrajectory();
+
+	virtual void Animate();
+
+	DeepLearningHelpers::FDL_Trajectory::Point GetSample(int32 Index) const
+	{
+		return Trajectory.Points[FMath::Clamp(Index * 10, 0, Trajectory.Points.Num() - 1)];
+	}
+
+	DeepLearningHelpers::FDL_Trajectory::Point GetPreviousSample(int32 Index) const
+	{
+		return GetSample(Index / 10);
+	}
+
+	DeepLearningHelpers::FDL_Trajectory::Point GetNextSample(int32 Index) const
+	{
+		if (Index % 10 == 0) 
+		{
+			return GetSample(Index / 10);
+		}
+
+		return GetSample(Index / 10 + 1);
+	}
 };

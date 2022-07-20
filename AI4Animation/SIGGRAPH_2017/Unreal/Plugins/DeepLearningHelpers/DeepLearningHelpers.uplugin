@@ -25,6 +25,10 @@
 		{
 			"Name": "Eigen",
 			"Enabled": true
+		},
+		{
+			"Name": "ControlRig",
+			"Enabled": true
 		}
 	]
 }

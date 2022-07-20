@@ -3,12 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MathUtil.h"
 #include "Kismet/KismetMathLibrary.h"
 
 namespace DeepLearningHelpers
 {
-	class DEEPLEARNINGHELPERS_API Trajectory
+	struct DEEPLEARNINGHELPERS_API FDL_Trajectory
 	{
 	public:
 		struct Point
@@ -24,8 +23,8 @@ namespace DeepLearningHelpers
 			TArray<float> Signals;
 			TArray<float> Styles;
 			TArray<float> StyleUpdate;
-
-			Point(int InIndex, int InStyles)
+			Point() = default;
+			explicit Point(int InIndex, int InStyles)
 			{
 				Index = InIndex;
 				Speed = 0.0f;
@@ -35,9 +34,9 @@ namespace DeepLearningHelpers
 				LeftSample = FVector::ZeroVector;
 				RightSample = FVector::ZeroVector;
 				Slope = 0.f;
-				Signals.Reserve(InStyles);
-				Styles.Reserve(InStyles);
-				StyleUpdate.Reserve(InStyles);
+				Signals.SetNum(InStyles);
+				Styles.SetNum(InStyles);
+				StyleUpdate.SetNum(InStyles);
 			}
 
 			void SetIndex(int32 NewIndex) 
@@ -191,15 +190,41 @@ namespace DeepLearningHelpers
 
 		static float Width;
 
-		Trajectory(int32 size, const TArray<FString>& InStyles) 
+		FDL_Trajectory() = default;
+
+		explicit FDL_Trajectory(int32 InSize, const TArray<FString>& InStyles) 
 		{
 			bInspect = false;
-			Points.Reserve(size);
+			Points.Reserve(InSize);
 			Styles = InStyles;
-			for(int32 i=0; i < Points.Num(); i++) 
+			for(int32 i=0; i < InSize; i++) 
 			{
 				Points.EmplaceAt(i, Point{i, Styles.Num()});
 				Points[i].SetTransformation(FMatrix::Identity);
+			}
+		}
+
+		explicit FDL_Trajectory(int32 InSize, const TArray<FString>& InStyles, const FVector& seedPosition, const FVector& seedDirection)
+		{
+			bInspect = false;
+			Points.Reserve(InSize);
+			Styles = InStyles;
+			for(int32 i = 0; i < InSize; i++) 
+			{
+				Points.EmplaceAt(i, Point{i, Styles.Num()});
+				Points[i].SetTransformation(MatrixTRS(seedPosition, UKismetMathLibrary::FindLookAtRotation(seedDirection, FVector::UpVector).Quaternion(), FVector::OneVector));
+			}
+		}
+
+		explicit FDL_Trajectory(int32 InSize, const TArray<FString>& InStyles, const TArray<FVector>& positions, const TArray<FVector>& directions) 
+		{
+			bInspect = false;
+			Points.Reserve(InSize);
+			Styles = InStyles;
+			for(int32 i=0; i < InSize; i++)
+			{
+				Points.EmplaceAt(i, Point{i, Styles.Num()});
+				Points[i].SetTransformation(MatrixTRS(positions[i], UKismetMathLibrary::FindLookAtRotation(directions[i], FVector::UpVector).Quaternion(), FVector::OneVector));
 			}
 		}
 
@@ -256,30 +281,6 @@ namespace DeepLearningHelpers
 			return Result;
 		}
 		
-		Trajectory(int32 size, const TArray<FString>& InStyles, const FVector& seedPosition, const FVector& seedDirection)
-		{
-			bInspect = false;
-			Points.Reserve(size);
-			Styles = InStyles;
-			for(int32 i = 0; i < Points.Num(); i++) 
-			{
-				Points.EmplaceAt(i, Point{i, Styles.Num()});
-				Points[i].SetTransformation(MatrixTRS(seedPosition, UKismetMathLibrary::FindLookAtRotation(seedDirection, FVector::UpVector).Quaternion(), FVector::OneVector));
-			}
-		}
-
-		Trajectory(int32 size, const TArray<FString>& InStyles, const TArray<FVector>& positions, const TArray<FVector>& directions) 
-		{
-			bInspect = false;
-			Points.Reserve(size);
-			Styles = InStyles;
-			for(int32 i=0; i < Points.Num(); i++) 
-			{
-				Points.EmplaceAt(i, Point{i, Styles.Num()});
-				Points[i].SetTransformation(MatrixTRS(positions[i], UKismetMathLibrary::FindLookAtRotation(directions[i], FVector::UpVector).Quaternion(), FVector::OneVector));
-			}
-		}
-
 		Point& GetFirst() 
 		{
 			return Points[0];
@@ -312,6 +313,18 @@ namespace DeepLearningHelpers
 			return length;
 		}
 
+		void Init(int32 InSize, const TArray<FString>& InStyles, const FVector& InSeedPosition, const FVector& InSeedDirection)
+		{
+			bInspect = false;
+			Points.Reserve(InSize);
+			Styles = InStyles;
+			for (int32 i = 0; i < InSize; i++)
+			{
+				Points.EmplaceAt(i, Point(i, Styles.Num()));
+				Points[i].SetTransformation(MatrixTRS(InSeedPosition, InSeedDirection.ToOrientationQuat(), FVector::OneVector));
+			}
+		}
+
 		static float SignedAngle(const FVector& V1, const FVector& V2)
 		{
 			const float DotVal = FVector::DotProduct(V1, V2);
@@ -319,7 +332,7 @@ namespace DeepLearningHelpers
 			const FVector Direction = FVector::CrossProduct(V1, V2);
 			if ((Direction * Direction).IsNearlyZero())
 			{
-				return (DotVal < 0) ? GlobalVectorConstants::Pi : 0.0f;
+				return (DotVal < 0) ? PI : 0.0f;
 			}
 			
 			const float Sign = Direction.Size() < 0.0f ? -1.0f : 1.0f;

@@ -12,7 +12,8 @@ public class DeepLearningHelpers : ModuleRules
 			{
 				"Core",
 				"Eigen", 
-                "Engine"
+                "Engine",
+				"ControlRig"
 			}
 			);
 
@@ -22,7 +23,8 @@ public class DeepLearningHelpers : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"InputCore"
 			}
 			);
 

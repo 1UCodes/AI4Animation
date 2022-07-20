@@ -66,6 +66,7 @@ private:
 		ArrayExtensions::Resize(ControlNeurons, XDimBlend);
 	}*/
 
+public:
 	void StoreParametersDerived() override
 	{
 		Parameters->Clear();
