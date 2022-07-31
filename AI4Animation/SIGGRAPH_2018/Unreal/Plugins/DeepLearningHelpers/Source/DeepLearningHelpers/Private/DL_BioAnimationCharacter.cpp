@@ -35,10 +35,15 @@ void ADL_BioAnimationCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 void ADL_BioAnimationCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	if (GEngine)
 	{
 		GEngine->SetMaxFPS(60.0f);
 	}
+
+	// check the control rig is assigned
+	checkf(ControlRig->ControlRigClass, TEXT("Control Rig Component needs a Control Rig Class to operate"));
+	
 	// TODO: Load widget with same config as in unity:
 	/*Forward = (Texture)Resources.Load("Forward");
 	Left = (Texture)Resources.Load("Left");
