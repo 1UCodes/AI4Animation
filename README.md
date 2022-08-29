@@ -16,7 +16,7 @@ This project explores the opportunities of deep learning for character animation
 <a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a>, 
 <a href="https://www.linkedin.com/in/ian-mason-134197105/">Ian Mason</a>, 
 <a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>, 
-ACM Trans. Graph. 41, 4.
+ACM Trans. Graph. 41, 4, Article 136.
 <sub>
 ------------
 <img src ="Media/SIGGRAPH_2022/Teaser.png" width="100%">
@@ -35,7 +35,9 @@ Learning the spatial-temporal structure of body movements is a fundamental probl
 -
 <a href="Media/SIGGRAPH_2022/Paper.pdf">Paper</a>
 -
-Code (coming soon)
+<a href="AI4Animation/SIGGRAPH_2022/PyTorch">PAE Code & Demo</a>
+-
+Animation Code & Demo (coming soon)
 -
 </p>
 
